@@ -14,7 +14,7 @@
 #include <chrono>
 #include <thread>
 
-FILE * fp;
+// FILE * fp;
 
 #define SIMPLEBMP_OPENGL
 #include "simplebmp.h"
@@ -478,7 +478,7 @@ void on_idle(void) {
 int main(int argc, char **argv)
 {
 
-	fp = fopen("SE_log", "a");
+	// fp = fopen("SE_log", "a");
 
 	for (int i = 0;i < argc-1;i++)
 	{
@@ -614,6 +614,6 @@ int main(int argc, char **argv)
 		glutKeyboardFunc(key_input);
 		glutMainLoop();
 	}
-	fclose (fp);
+	// fclose (fp);
 	return 0;
 }
