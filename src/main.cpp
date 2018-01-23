@@ -14,13 +14,14 @@
 #include <chrono>
 #include <thread>
 
+FILE * fp;
 
-#define SIMPLEBMP_OPENGL 
+#define SIMPLEBMP_OPENGL
 #include "simplebmp.h"
 using namespace std;
 
 #define buffer_size 1000000
-#define channels 2 
+#define channels 2
 //#define delay 10 //delay between time steps, use if program is too fast
 #define windowWidth 600 //display window
 #define windowHeight 700 //display window
@@ -43,11 +44,13 @@ int* safe_distance;
 int* order;
 
 int delay = 0;
-int draw_delay=32;
+int draw_delay=1;
 FILE *results;
 
 char log_buffer[255];
 char log_file_buffer[buffer_size];
+
+int light_center[2]={LIGHT_CENTER_X,LIGHT_CENTER_Y};
 
 
 bool log_debug_info = true;
@@ -174,13 +177,14 @@ void save_bmp(const char *fileName)
 	bmp.save(fileName);
 }
 
+
 bool run_simulation_step()
 {
 	static int lastrun = 0;
 	lastrun++;
 
 	total_secs = lastrun / SECOND;
-	
+
 	int secs = total_secs % 60;
 	int mins = (total_secs / 60) % 60;
 	int hours = total_secs / 3600;
@@ -198,6 +202,18 @@ bool run_simulation_step()
 			robots[i]->robot_controller();
 		}
 	}
+
+	//update angle to light for robots
+	for(i=0;i<num_robots;i++)
+	{
+
+//	robots[i]->angle_to_light=fmod(atan2(light_center[1]-robots[i]->pos[1],light_center[0]-robots[i]->pos[0])-robots[i]->pos[2]+PI,2*PI)-PI;
+	robots[i]->pos[2]=fmod(robots[i]->pos[2],2*PI);
+	robots[i]->angle_to_light=fmod(atan2(light_center[1]-robots[i]->pos[1],light_center[0]-robots[i]->pos[0])-robots[i]->pos[2]+PI,2*PI)-PI   ;
+//printf("in main angle is %f\n\r",robots[i]->angle_to_light);
+
+	}
+
 
 	int seed;
 	seed = (rand() % shuffles) * num_robots;
@@ -218,7 +234,11 @@ bool run_simulation_step()
 					double range = rs->comm_out_criteria(rd->pos[0], rd->pos[1], safe_distance[index * num_robots + j]);
 					if (range)
 					{
-						if (rd->comm_in_criteria(rs->pos[0], rs->pos[1], range, msg))
+						float theta=0;
+						theta=atan2(rs->pos[1]-rd->pos[1],rs->pos[0]-rd->pos[0])-rd->pos[2];
+
+
+						if (rd->comm_in_criteria(rs->pos[0], rs->pos[1], range,theta, msg))
 						{
 							rs->received();
 							//break;
@@ -249,7 +269,7 @@ bool run_simulation_step()
 		case 2:
 		{
 			t += rotation_step;
-			s = r->speed;
+			s = 0;//r->speed;
 			if (r->pos[2] > twicePi)
 			{
 				r->pos[2] -= twicePi;
@@ -259,11 +279,17 @@ bool run_simulation_step()
 		case 3:
 		{
 			t -= rotation_step;
-			s = r->speed;
+			s = 0;//r->speed;
 			if (r->pos[2] < 0)
 			{
 				r->pos[2] += twicePi;
 			}
+			break;
+		}
+		case 5:
+		{
+			t += r->motor_error;
+			s = - (r->speed);
 			break;
 		}
 		}
@@ -292,7 +318,7 @@ void draw_scene(void)
 
 	draw = run_simulation_step();
 
-	
+
 	if(draw)
 	{
 		glColor4f(0, 0, 0, 0);
@@ -341,7 +367,7 @@ void draw_scene(void)
 
 		glutSwapBuffers();
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	
+
 	}
 
 	if (last)
@@ -395,16 +421,16 @@ void key_input(unsigned char key, int x, int y)
 	case 27:
 		exit(0);
 		break;
-	case 'w'://up 
+	case 'w'://up
 		view_y += 100;
 		break;
-	case 'a'://up 
+	case 'a'://up
 		view_x -= 100;
 		break;
-	case 's'://up 
+	case 's'://up
 		view_y -= 100;
 		break;
-	case 'd'://up 
+	case 'd'://up
 		view_x += 100;
 		break;
 	case '-':
@@ -451,6 +477,9 @@ void on_idle(void) {
 // Main routine.
 int main(int argc, char **argv)
 {
+
+	fp = fopen("SE_log", "a");
+
 	for (int i = 0;i < argc-1;i++)
 	{
 		if (strcmp(argv[i],"/r")==0)
@@ -500,7 +529,7 @@ int main(int argc, char **argv)
 	order = (int *) malloc(shuffles * num_robots * sizeof(int));
 	//seed random variable for different random behavior every time
 	unsigned int t = 0;
-	
+
 	if (seed)
 	{
 		t = seed;
@@ -511,10 +540,10 @@ int main(int argc, char **argv)
 	}
 
 	sprintf(log_buffer, "random seed: %d\n", t);
-	
+
 	log_info(log_buffer);
 	srand(t);
-	
+
 	//set the simulation time to 0
 	time_sim = 0;
 
@@ -524,13 +553,15 @@ int main(int argc, char **argv)
 	view_y = arena_height;
 
 	//place robots
-	float robot_pos[ROBOT_COUNT][3];	
+	float robot_pos[ROBOT_COUNT][4];
+
 	setup_positions(robot_pos);
-	
+
 	for (int i=0; i<ROBOT_COUNT; i++)
 	{
 		robots[i] = new mykilobot();
 		robots[i]->robot_init(robot_pos[i][0], robot_pos[i][1], robot_pos[i][2]);
+		robots[i]->id=(int)robot_pos[i][3];
 	}
 	setup();
 
@@ -565,7 +596,7 @@ int main(int argc, char **argv)
 		{
 			run_simulation_step();
 		}
-		
+
 		glutInit(&argc, argv);
 		glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB);
 		glutInitWindowSize(windowWidth, windowHeight);
@@ -583,5 +614,6 @@ int main(int argc, char **argv)
 		glutKeyboardFunc(key_input);
 		glutMainLoop();
 	}
+	fclose (fp);
 	return 0;
 }

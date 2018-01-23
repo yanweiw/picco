@@ -1,97 +1,74 @@
 #pragma once
 #include "kilolib.h"
 
+#define ROTATIONPERTICK 0.05
+#define DISTANCEPERTICK 0.5
+#define RADPERINT 0.02472
+#define BEACON_NUM 3
+
 class mykilobot : public kilobot
 {
-	unsigned char distance;
+	unsigned char dist;
+	float theta;
 	message_t out_message;
-	int rxed=0;
-	
-	int motion=0;
-	long int motion_timer=0;
-
-	int msrx=0;
-	struct mydata {
-		unsigned int data1;
-		unsigned int data2;
-	};
+	long int motion_timer = 0;
+	int phase = 0; // phase change occurs when see new robot whose id denotes the new phase
+	// 0 phase is the initial state
+	long int phase_start[BEACON_NUM + 1]; // array to record start time of each phase
+	int phase_interval[BEACON_NUM + 1];
+	int motion_flag = 0; // 0 means stop, nonzero means move at that phase
+	int prev_motion = 0; // record previous motion phase
 
 	//main loop
 	void loop()
 	{
-		//set_motors(kilo_straight_left, kilo_straight_right);
-		if(rxed)
-		{
-			rxed=0;
-			if(motion==1)
-			{
-				if(out_message.data[0]<(id))
-				{
-				
-					motion=0;
-					motion_timer=kilo_ticks;//kilo_ticks is the kilobots clock
+		set_color(RGB(1,1,1));
 
+		if (id == 0){
+			switch (phase)
+			{
+				case 1:
+				{
+					set_color(RGB(1,0,0));
+					break;
+				}
+				case 2:
+				{
+					set_color(RGB(0,1,0));
+					break;
+				}
+				case 3:
+				{
+					set_color(RGB(0,0,1));
+					break;
 				}
 			}
-		}
 
-		if(motion==0)
-		{
-			if(kilo_ticks>motion_timer+100)
-				motion=1;
-		}
+			spinup_motors();
+			set_motors(50,0);
 
-		if(motion==0)
-		{
-			set_motors(0, 0);//turn off motors
-			set_color(RGB(3,0,0));//set color
-		}
-		else
-		{
-			set_color(RGB(0,3,0));
-			
-			if(rand()%100<90)
+			float phase_weight = phase_interval[phase] / (phase_interval[1] + phase_interval[2] + phase_interval[3] + 1.0);
+			int thrust_freq = 2 + (int)(6 * (1 - phase_weight));
+			if (motion_timer % thrust_freq == 0 )
 			{
-				spinup_motors();//first start motors
-				set_motors(kilo_straight_left, kilo_straight_right);//then command motion
+				set_motors(-50, -50);
 			}
-			else if(rand()%100<95)
-			{	spinup_motors();
-				set_motors(0, kilo_turn_right);
-			}
-			else
-			{
-				spinup_motors();
-				set_motors(kilo_turn_left, 0);
-			}
-			
+			motion_timer++;
+		} else {
+			out_message.type=NORMAL;
+			out_message.data[0] = id;
+			out_message.crc=message_crc(&out_message);
 		}
-	
-		//update message
-		out_message.type = NORMAL;
-		out_message.data[0] = id;
-		out_message.data[1] = 0;
-		out_message.data[2] = 0;
-		out_message.crc = message_crc(&out_message);
 	}
 
 	//executed once at start
 	void setup()
 	{
-		id=id&0xff;
-		out_message.type = NORMAL;
-		out_message.data[0] = id;
-		out_message.data[1] = 0;
-		out_message.data[2] = 0;
-		out_message.crc = message_crc(&out_message);
-		set_color(RGB(0,0,3));
-		
 	}
 
 	//executed on successfull message send
 	void message_tx_success()
 	{
-		msrx=1;
 	}
 
 	//sends message at fixed rate
@@ -99,7 +76,7 @@ class mykilobot : public kilobot
 	{
 		static int count = rand();
 		count--;
-		if (!(count % 50))
+		if (!(count % 1))
 		{
 			return &out_message;
 		}
@@ -107,12 +84,22 @@ class mykilobot : public kilobot
 	}
 
 	//receives message
-	void message_rx(message_t *message, distance_measurement_t *distance_measurement)
+	void message_rx(message_t *message, distance_measurement_t *distance_measurement,float t)
 	{
-		distance = estimate_distance(distance_measurement);
-		out_message.data[0] = message->data[0];
-		out_message.data[1] = message->data[1];
-		out_message.data[2] = message->data[2];
-		rxed=1;
+		dist = estimate_distance(distance_measurement);
+		theta=t;
+		if (id == 0 && ((theta > 6.2 && theta < 6.4) || (theta < 0.1 && theta > -0.1))) {
+			int next_phase = message->data[0];
+			if (phase != next_phase)
+			{
+				phase_start[next_phase] = motion_timer;
+				int interval = phase_start[next_phase] - phase_start[phase];
+				if (interval > 3) {
+					phase_interval[phase] = interval;
+					// printf("phase: %d, angle: %d\n", phase, phase_interval[phase]);
+					phase = next_phase;
+				}
+			}
+		}
 	}
 };
