@@ -1,10 +1,10 @@
 #pragma once
 #include "kilolib.h"
 
-#define ROTATIONPERTICK 0.05
-#define DISTANCEPERTICK 0.5
-#define RADPERINT 0.02472
-#define BEACON_NUM 3
+// #define ROTATIONPERTICK 0.05
+// #define DISTANCEPERTICK 0.5
+// #define RADPERINT 0.02472
+#define BEACON_NUM 0
 
 class mykilobot : public kilobot
 {
@@ -12,7 +12,7 @@ class mykilobot : public kilobot
 	float theta;
 	message_t out_message;
 	long int motion_timer = 0;
-	int phase = 0; // phase change occurs when see new robot whose id denotes the new phase
+	char phase = 0; // phase change occurs when see new robot whose id denotes the new phase
 	// 0 phase is the initial state
 	long int phase_start[BEACON_NUM + 1]; // array to record start time of each phase
 	int phase_interval[BEACON_NUM + 1];
@@ -24,41 +24,41 @@ class mykilobot : public kilobot
 	{
 		set_color(RGB(1,1,1));
 
-		if (id == 0){
-			switch (phase)
-			{
-				case 1:
-				{
-					set_color(RGB(1,0,0));
-					break;
-				}
-				case 2:
-				{
-					set_color(RGB(0,1,0));
-					break;
-				}
-				case 3:
-				{
-					set_color(RGB(0,0,1));
-					break;
-				}
-			}
+		// if (id == 0){
+		// 	switch (phase)
+		// 	{
+		// 		case 1:
+		// 		{
+		// 			set_color(RGB(1,0,0));
+		// 			break;
+		// 		}
+		// 		case 2:
+		// 		{
+		// 			set_color(RGB(0,1,0));
+		// 			break;
+		// 		}
+		// 		case 3:
+		// 		{
+		// 			set_color(RGB(0,0,1));
+		// 			break;
+		// 		}
+		// 	}
 
 			spinup_motors();
-			set_motors(50,0);
+			set_motors(50,50);
 
-			float phase_weight = phase_interval[phase] / (phase_interval[1] + phase_interval[2] + phase_interval[3] + 1.0);
-			int thrust_freq = 2 + (int)(6 * (1 - phase_weight));
-			if (motion_timer % thrust_freq == 0 )
-			{
-				set_motors(-50, -50);
-			}
-			motion_timer++;
-		} else {
-			out_message.type=NORMAL;
-			out_message.data[0] = id;
-			out_message.crc=message_crc(&out_message);
-		}
+		// 	float phase_weight = phase_interval[phase] / (phase_interval[1] + phase_interval[2] + phase_interval[3] + 1.0);
+		// 	int thrust_freq = 2 + (int)(6 * (1 - phase_weight));
+		// 	if (motion_timer % thrust_freq == 0 )
+		// 	{
+		// 		set_motors(-50, -50);
+		// 	}
+		// 	motion_timer++;
+		// } else {
+		// 	out_message.type=NORMAL;
+		// 	out_message.data[0] = id;
+		// 	out_message.crc=message_crc(&out_message);
+		// }
 	}
 
 	//executed once at start

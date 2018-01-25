@@ -51,7 +51,7 @@ public:
 
 	virtual void *get_message() = 0;
 
-	double speed=.5;
+	double speed=1.5;
 
 	double battery = -1;
 
