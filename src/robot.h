@@ -20,13 +20,13 @@ public:
 	int id;
 	double pos[3];//x,y,theta position in real world, dont use these in controller, thats cheating!!
 	double motor_error;//value of how motors differ from ideal, dont use these, thats cheating!!
-	double comm_range = 60; //communication range between robots
+	double comm_range = 360; //communication range between robots
 	double color[3]; //robot color output, values 0-1
 
 					 //robot commanded motion 1=forward, 2=cw rotation, 3=ccw rotation, 4=stop
 	int motor_command;
 
-	float angle_to_light;
+	float angle_to_light = 3.14; // initialization to a value other than 0
 
 	double dest[3] = { -1,-1,-1 };
 

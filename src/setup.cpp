@@ -1,11 +1,11 @@
-#define ROBOT_COUNT 1
+#define ROBOT_COUNT 2
 // #define ROBOT_SPACING 40
 
 #define ARENA_WIDTH 1000//(32*32 + 33*ROBOT_SPACING)
 #define ARENA_HEIGHT 1000//(32*32 + 33*ROBOT_SPACING)
 
-#define LIGHT_CENTER_X ARENA_WIDTH
-#define LIGHT_CENTER_Y ARENA_HEIGHT
+#define LIGHT_CENTER_X ARENA_WIDTH / 2
+#define LIGHT_CENTER_Y ARENA_HEIGHT / 2 + 300
 
 #define SIMULATION_TIME 180 //in seconds
 
@@ -34,8 +34,12 @@ void setup_positions(float robot_pos[ROBOT_COUNT][4])
 // triangular positions
 	robot_pos[0][0] = ARENA_WIDTH/2;
 	robot_pos[0][1] = ARENA_HEIGHT/2;
-	robot_pos[0][2] = 0;
+	robot_pos[0][2] = 1.57;
 	robot_pos[0][3] = 0;
+	robot_pos[1][0] = LIGHT_CENTER_X;
+	robot_pos[1][1] = LIGHT_CENTER_Y;
+	robot_pos[1][2] = 1.57;
+	robot_pos[1][3] = 10;
 // 	robot_pos[1][0] = x;
 // 	robot_pos[1][1] = y + 200;
 // 	robot_pos[1][2] = 0;

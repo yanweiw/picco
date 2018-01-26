@@ -265,13 +265,13 @@ bool run_simulation_step()
 		{
 		case 1:
 		{
-			t += r->motor_error; //motor_error has been set to 0
+			t += r->motor_error - rotation_step; //motor_error has been set to 0
 			s = r->speed;
 			break;
 		}
 		case 2:
 		{
-			t += 0;//rotation_step;
+			t += rotation_step;
 			s = 0;//r->speed;
 			if (r->pos[2] > twicePi)
 			{
@@ -281,7 +281,7 @@ bool run_simulation_step()
 		}
 		case 3:
 		{
-			t -= 0;//rotation_step;
+			t -= rotation_step;
 			s = 0;//r->speed;
 			if (r->pos[2] < 0)
 			{
@@ -291,13 +291,12 @@ bool run_simulation_step()
 		}
 		case 5:
 		{
-			t += r->motor_error;
+			t += r->motor_error - rotation_step;
 			s = - (r->speed);
 			break;
 		}
 		}
 		//increment t every step as it always rotates
-		t -= rotation_step;
 		double temp_x = s*cos(t) + r->pos[0];
 		double temp_y = s*sin(t) + r->pos[1];
 		if (find_collisions(index, temp_x, temp_y) == 0)
@@ -334,7 +333,6 @@ void draw_scene(void)
 		glLineWidth(1.0);
 
 		//draw dots to trace its path
-		// glVertex2f((GLfloat)(robots[j]->pos[0]), (GLfloat)(robots[j]->pos[1]));
 		glBegin(GL_POINTS);
 		traceX[draw_counter % 255] = robots[0]->pos[0]; // only to record robot with id = 0
 		traceY[draw_counter % 255] = robots[0]->pos[1];
