@@ -53,7 +53,7 @@ FILE *results;
 char log_buffer[255];
 char log_file_buffer[buffer_size];
 
-int light_center[2]={LIGHT_CENTER_X,LIGHT_CENTER_Y};
+int light_center[6]={LIGHT_1_X,LIGHT_1_Y,LIGHT_2_X,LIGHT_2_Y,LIGHT_3_X,LIGHT_3_Y};
 
 
 bool log_debug_info = true;
@@ -212,7 +212,9 @@ bool run_simulation_step()
 
 //	robots[i]->angle_to_light=fmod(atan2(light_center[1]-robots[i]->pos[1],light_center[0]-robots[i]->pos[0])-robots[i]->pos[2]+PI,2*PI)-PI;
 	robots[i]->pos[2]=fmod(robots[i]->pos[2],2*PI);
-	robots[i]->angle_to_light=fmod(atan2(light_center[1]-robots[i]->pos[1],light_center[0]-robots[i]->pos[0])-robots[i]->pos[2]+PI,2*PI)-PI   ;
+	robots[i]->angle_to_light_1=fmod(atan2(light_center[1]-robots[i]->pos[1],light_center[0]-robots[i]->pos[0])-robots[i]->pos[2]+PI,2*PI)-PI   ;
+	robots[i]->angle_to_light_2=fmod(atan2(light_center[3]-robots[i]->pos[1],light_center[2]-robots[i]->pos[0])-robots[i]->pos[2]+PI,2*PI)-PI   ;
+	robots[i]->angle_to_light_3=fmod(atan2(light_center[5]-robots[i]->pos[1],light_center[4]-robots[i]->pos[0])-robots[i]->pos[2]+PI,2*PI)-PI   ;
 //printf("in main angle is %f\n\r",robots[i]->angle_to_light);
 
 	}
@@ -330,6 +332,8 @@ void draw_scene(void)
 
 		glutSetWindowTitle(rt);
 		glEnable(GL_LINE_SMOOTH);
+		glEnable(GL_BLEND);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		glLineWidth(1.0);
 
 		//draw dots to trace its path
@@ -352,7 +356,7 @@ void draw_scene(void)
 		{
 			for (int j = 0;j < num_robots;j++)
 			{
-				glColor4f((GLfloat)robots[j]->color[0], (GLfloat)robots[j]->color[1], (GLfloat)robots[j]->color[2], 1.0);
+				glColor4f((GLfloat)robots[j]->color[0], (GLfloat)robots[j]->color[1], (GLfloat)robots[j]->color[2], 0.3);
 				glVertex2f((GLfloat)(robots[j]->pos[0]-i), (GLfloat)(robots[j]->pos[1]-ch[i]));
 				glVertex2f((GLfloat)(robots[j]->pos[0] -i), (GLfloat)(robots[j]->pos[1] + ch[i]));
 				glVertex2f((GLfloat)(robots[j]->pos[0] + i), (GLfloat)(robots[j]->pos[1] - ch[i]));
@@ -362,13 +366,13 @@ void draw_scene(void)
 		for (int j = 0;j < num_robots;j++)
 		{
 			glBegin(GL_LINES);
-			glColor4f(0, 0, 0, 1.0);
+			glColor4f(0, 0, 0, 0.3);
 			glVertex2f((GLfloat)robots[j]->pos[0], (GLfloat)robots[j]->pos[1]);
 			glVertex2f((GLfloat)(robots[j]->pos[0] + cos(robots[j]->pos[2])*radius), (GLfloat)(robots[j]->pos[1] + sin(robots[j]->pos[2])*radius));
 			if (robots[j]->dest[0] != -1)
 			{
 				glBegin(GL_LINES);
-				glColor4f(1, 1, 1, 1.0);
+				glColor4f(1, 1, 1, 0.3);
 				glVertex2f((GLfloat)robots[j]->pos[0], (GLfloat)robots[j]->pos[1]);
 				glVertex2f((GLfloat)robots[j]->dest[0], (GLfloat)robots[j]->dest[1]);
 			}

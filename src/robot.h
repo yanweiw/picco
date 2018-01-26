@@ -26,7 +26,9 @@ public:
 					 //robot commanded motion 1=forward, 2=cw rotation, 3=ccw rotation, 4=stop
 	int motor_command;
 
-	float angle_to_light = 3.14; // initialization to a value other than 0
+	float angle_to_light_1 = 3.14; // initialization to a value other than 0
+	float angle_to_light_2 = 3.14;
+	float angle_to_light_3 = 3.14;
 
 	double dest[3] = { -1,-1,-1 };
 
