@@ -44,12 +44,12 @@ class mykilobot : public kilobot
 				}
 			}
 
-			if ((angle_to_light_1 >= -0.03 && angle_to_light_1 < 0.07)
-			|| (angle_to_light_2 >= -0.03 && angle_to_light_2 < 0.07)
-			|| (angle_to_light_3 >= -0.03 && angle_to_light_3 < 0.07)) {
+			if ((angle_to_light_1 >= -0.03 && angle_to_light_1 < 0.12)
+			|| (angle_to_light_2 >= -0.03 && angle_to_light_2 < 0.12)
+			|| (angle_to_light_3 >= -0.03 && angle_to_light_3 < 0.12)) {
 				// phase_start[0] records the starting time of the current phase
 				int past_phase = motion_timer - phase_start[0];
-				if (past_phase > 2) { // only update after some threshold time lapse
+				if (past_phase > 3) { // only update after some threshold time lapse
 					for (int i = BEACON_NUM - 1; i > 0; i--) {
 						phase_start[i] = phase_start[i-1];
 					}
