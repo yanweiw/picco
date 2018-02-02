@@ -47,13 +47,14 @@ class mykilobot : public kilobot
 			if ((angle_to_light_1 >= -0.03 && angle_to_light_1 < 0.07)
 			|| (angle_to_light_2 >= -0.03 && angle_to_light_2 < 0.07)
 			|| (angle_to_light_3 >= -0.03 && angle_to_light_3 < 0.07)) {
+				// phase_start[0] records the starting time of the current phase
 				int past_phase = motion_timer - phase_start[0];
-				if (past_phase > 2) {
+				if (past_phase > 2) { // only update after some threshold time lapse
 					for (int i = BEACON_NUM - 1; i > 0; i--) {
 						phase_start[i] = phase_start[i-1];
 					}
 					phase_start[0] = motion_timer;
-
+					// phase_interval[BEACON_NUM-1] corresponds to the oldest phase in record
 					for (int i = BEACON_NUM - 1; i > 0; i--) {
 						phase_interval[i] = phase_interval[i-1];
 					}
@@ -65,7 +66,7 @@ class mykilobot : public kilobot
 			float period = 0.0;
 			motion_flag = 1;
 			for (int i = 0; i < BEACON_NUM; i++) {
-				if (phase_interval[i] > phase_interval[BEACON_NUM - 1]) { // cannot use >= here
+				if (phase_interval[i] < phase_interval[BEACON_NUM - 1]) { // cannot include = here
 					motion_flag = 0;
 					break;
 				}
@@ -76,17 +77,16 @@ class mykilobot : public kilobot
 				// float percent_interval = phase_interval[BEACON_NUM - 1] / period;
 				float average = period / BEACON_NUM;
 				// float above_ave = percent_interval - 1.0 / BEACON_NUM;
-				float above_ave = phase_interval[BEACON_NUM - 1] - average;
+				float above_ave = -(phase_interval[BEACON_NUM - 1] - average); // could be below ave
 				int thrust_time = MIN((int) (above_ave * K_CONST), phase_interval[BEACON_NUM-1]);
 				if ((motion_timer < phase_start[0] + (phase_interval[BEACON_NUM-1] - thrust_time) / 2) ||
 				(motion_timer > phase_start[0] + (phase_interval[BEACON_NUM-1] + thrust_time) / 2)) {
 					motion_flag = 0;
 				}
 			}
-
 			spinup_motors();
 			if (motion_flag) {
-				set_motors(-50,-50);
+				set_motors(50,50);
 			} else {
 				set_motors(50, 0);
 			}

@@ -33,10 +33,12 @@ using namespace std;
 #define SKIPFRAMES 0
 #define shuffles 20
 #define circledef 30
+#define tracelength 8191
+
 // Global vars.
 long int draw_counter; // to count the number of draw routine
-float traceX[255]; // record traveled path
-float traceY[255];
+float traceX[tracelength]; // record traveled path
+float traceY[tracelength];
 double time_sim;  //simulation time
 double zoom, view_x, view_y; //var. for zoom and scroll
 bool takesnapshot;
@@ -338,11 +340,10 @@ void draw_scene(void)
 
 		//draw dots to trace its path
 		glBegin(GL_POINTS);
-		traceX[draw_counter % 255] = robots[0]->pos[0]; // only to record robot with id = 0
-		traceY[draw_counter % 255] = robots[0]->pos[1];
+		traceX[draw_counter % tracelength] = robots[0]->pos[0]; // only to record robot with id = 0
+		traceY[draw_counter % tracelength] = robots[0]->pos[1];
 		glColor4f(1,1,1,1);
-		for (int i = 0; i < 255; i++){
-			// printf("%f\n", traceX[i]);
+		for (int i = 0; i < tracelength; i++){
 			glVertex2f((GLfloat)traceX[i], (GLfloat)traceY[i]);
 		}
 		glEnd();
