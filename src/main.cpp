@@ -14,7 +14,7 @@
 #include <chrono>
 #include <thread>
 
-// FILE * fp;
+FILE * fp;
 
 #define SIMPLEBMP_OPENGL
 #include "simplebmp.h"
@@ -48,7 +48,7 @@ robot** robots;//creates an array of robots
 int* safe_distance;
 int* order;
 
-int delay = 1;
+int delay = 10;
 int draw_delay=1;
 FILE *results;
 
@@ -258,9 +258,16 @@ bool run_simulation_step()
 
 	seed = (rand() % shuffles) * num_robots;
 	//move robots
-	for (i = 0;i < num_robots;i++)
-	{
-		int index = order[seed + i];
+
+	// float rotation_error = 5*robot::gauss_rand(rand()/100)*motion_error_std;
+	float rotation_error =  0.02*(sin(0.1*total_secs)+sin(0.2*total_secs));
+	float propulsion_error = 50*robot::gauss_rand(rand()/100)*motion_error_std;
+	// rotation_error = 0.025;
+	propulsion_error = 0;
+
+	// for (i = 0;i < num_robots;i++)
+	// {
+		int index = 0;//order[seed + i];
 		robot *r = robots[index];
 
 		double t = r->pos[2];
@@ -269,13 +276,13 @@ bool run_simulation_step()
 		{
 		case 1:
 		{
-			t += r->motor_error - rotation_step; //motor_error has been set to 0
-			s = r->speed;
+			t += - (rotation_error + rotation_step); //motor_error has been set to 0
+			s = r->speed + propulsion_error;
 			break;
 		}
 		case 2:
 		{
-			t += rotation_step;
+			t += rotation_error + rotation_step;
 			s = 0;//r->speed;
 			if (r->pos[2] > twicePi)
 			{
@@ -285,7 +292,7 @@ bool run_simulation_step()
 		}
 		case 3:
 		{
-			t -= rotation_step;
+			t += - (rotation_error + rotation_step);
 			s = 0;//r->speed;
 			if (r->pos[2] < 0)
 			{
@@ -295,12 +302,13 @@ bool run_simulation_step()
 		}
 		case 5:
 		{
-			t += r->motor_error - rotation_step;
-			s = - (r->speed);
+			t += - (rotation_error + rotation_step);
+			s = - (r->speed + propulsion_error);
 			break;
 		}
 		}
 		//increment t every step as it always rotates
+		fprintf(fp, "%f\n", rotation_error + 0.05);
 		double temp_x = s*cos(t) + r->pos[0];
 		double temp_y = s*sin(t) + r->pos[1];
 		if (find_collisions(index, temp_x, temp_y) == 0)
@@ -309,7 +317,7 @@ bool run_simulation_step()
 			r->pos[1] = temp_y;
 		}
 		r->pos[2] = t;
-	}
+	// }
 	static int lastsec =- 1;
 	bool result = false;
 	if(lastrun%draw_delay==0)
@@ -503,7 +511,7 @@ void on_idle(void) {
 int main(int argc, char **argv)
 {
 
-	// fp = fopen("SE_log", "a");
+	fp = fopen("SE_log", "w");
 
 	for (int i = 0;i < argc-1;i++)
 	{
@@ -568,6 +576,7 @@ int main(int argc, char **argv)
 
 	log_info(log_buffer);
 	srand(t);
+	printf("current seed: %d\n", t);
 
 	//set the simulation time to 0
 	time_sim = 0;
@@ -639,6 +648,6 @@ int main(int argc, char **argv)
 		glutKeyboardFunc(key_input);
 		glutMainLoop();
 	}
-	// fclose (fp);
+	fclose (fp);
 	return 0;
 }

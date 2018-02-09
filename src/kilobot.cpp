@@ -8,6 +8,10 @@
 #define K_CONST 1
 #define MIN(a, b) ((a < b) ? a : b)
 
+FILE * fp1;
+FILE * fp2;
+
+
 class mykilobot : public kilobot
 {
 	unsigned char dist;
@@ -25,24 +29,32 @@ class mykilobot : public kilobot
 		set_color(RGB(1,1,1));
 
 		if (id == 0){
-			switch (phase)
-			{
-				case 0:
-				{
-					set_color(RGB(1,0,0));
-					break;
-				}
-				case 1:
-				{
-					set_color(RGB(0,1,0));
-					break;
-				}
-				case 2:
-				{
-					set_color(RGB(0,0,1));
-					break;
-				}
-			}
+			// switch (phase)
+			// {
+			// 	case 0:
+			// 	{
+			// 		set_color(RGB(1,0,0));
+			// 		break;
+			// 	}
+			// 	case 1:
+			// 	{
+			// 		set_color(RGB(0,1,0));
+			// 		break;
+			// 	}
+			// 	case 2:
+			// 	{
+			// 		set_color(RGB(0,0,1));
+			// 		break;
+			// 	}
+			// }
+
+			fp1 = fopen("ave_log", "a");
+			fp2 = fopen("interval_log", "a");
+			int total = phase_interval[0]+phase_interval[1]+phase_interval[2];
+			fprintf(fp2, "%d\n", total);
+			fprintf(fp1, "%f\n", 10.0/total);
+			// if (10.0/total > 0.2) {printf("%f\n", 10.0/total);}
+
 
 			if ((angle_to_light_1 >= -0.03 && angle_to_light_1 < 0.12)
 			|| (angle_to_light_2 >= -0.03 && angle_to_light_2 < 0.12)
@@ -91,6 +103,10 @@ class mykilobot : public kilobot
 				set_motors(50, 0);
 			}
 			motion_timer++;
+
+			fclose (fp1);
+			fclose (fp2);
+
 		}
 	}
 
