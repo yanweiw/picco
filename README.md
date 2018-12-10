@@ -1,8 +1,14 @@
 # Swarm Robotics
 
-This repo demonstrates the implementation results of three multi-agent algorithms, pertaining to the coordination, segregation, and locomotion of a robot swarm respectively. I implement the algorithms on kilobots and simulate their behaviors. [Kilobot](https://www.kilobotics.com/) is a low cost swarm robot designed by professor Michael Rubenstein. More details can be found [here](https://dash.harvard.edu/bitstream/handle/1/9367001/rubenstein_kilobotlow.pdf?sequence=1).
+This research studies:
+* multi-agent distributed algorithms - **subproject I** demonstrates three multi-agent algorithms, pertaining to the coordination, segregation, and locomotion of a robot swarm
+* robust locomotion with cheap sensor on a low cost underactuated system - **subproject II** demonstrates both software and hardware implementation
+
+I implement the simulations on kilobot simulation engine. [Kilobot](https://www.kilobotics.com/) is a low cost swarm robot designed by professor Michael Rubenstein. More details can be found [here](https://dash.harvard.edu/bitstream/handle/1/9367001/rubenstein_kilobotlow.pdf?sequence=1).
 
 ![kilobot](image/kilobot.png)
+
+## Subproject I
 
 ### Coordinate system based on Hopcount
 
@@ -22,6 +28,22 @@ Often times it is helpful for a robot swarm to segregate into different function
 
 ![flocking](image/flocking.gif)
 
-### Code
+## Subproject II
 
-I decide not to put up my code here as these simulations are likely to be assigned as homework for the future swarm robotics class. If you have any questions about my implementations, you can find me at my [portfolio page](https://yanweiw.github.io/). Cover photo credit to [Harvard SEAS](https://www.seas.harvard.edu/news/2014/08/self-organizing-thousand-robot-swarm).
+### Motivation
+
+This work is inspired by [Piccolissimo - the smallest micro-aerial vehicle (Piccoli, et al).](https://www.modlabupenn.org/2016/10/27/piccolissimo/) The steerable MAV hovers with only one actuator while the body spins in the opposite direction to achieve passive stability. We add one light sensor on board, so the sensor records light pulses of surrounding light sources as it spins with the body. Given a triangular set of lights, the MAV can use the light pulses to position itself at the center of the triangle. We aim to build swarms of such low cost MAV with navigation capability eventually, while this project focuses on localization of a single low cost rotating hovercraft.
+
+### Simulation
+
+I developed distributed algorithms to localize single agent and multi-agent swarms at the center of a light array without central coordination. I use the heuristic that signal pulses coming from the light sensor that rotates at constant velocity should be evenly spaced. If two light intensity peaks are observed within a short interval, the agent is likely too far away from those light sources and should adjust by moving closer. The zigzag trace in the slow-motion Fig 1 demonstrates these micro adjustments which allows the hovercraft to stay stably at the center. Fig 2 shows an extension of work on single agent and uses each other as additional light sources to help achieve stable localization at equilibrium.
+
+|<img src="image/fixed_picco.gif" width="280" height="280">|<img src="image/two_robot.gif" width="420" height="280" >|
+|----------------------------------------------------------|-----|
+|Fig 1. Single agent localization|Fig 2. Multi-agent localization|
+
+### Hardware Implementation
+
+
+
+If you have any questions about my implementations, you can find me at my [portfolio page](https://yanweiw.github.io/). Cover photo credit to [Harvard SEAS](https://www.seas.harvard.edu/news/2014/08/self-organizing-thousand-robot-swarm).
