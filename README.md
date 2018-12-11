@@ -1,10 +1,10 @@
 # Swarm Robotics
 
-This research studies:
-* multi-agent distributed algorithms - **subproject I** demonstrates three multi-agent algorithms, pertaining to the coordination, segregation, and locomotion of a robot swarm
-* robust locomotion with cheap sensor on a low cost underactuated system - **subproject II** demonstrates both software and hardware implementation
+This research project studies:
+* multi-agent distributed algorithms - **subproject I** demonstrates three swarm behaviors: coordination, segregation, and locomotion
+* robust localization with cheap sensor on a low cost underactuated system - **subproject II** documents software and hardware implementations
 
-I implement the simulations on kilobot simulation engine. [Kilobot](https://www.kilobotics.com/) is a low cost swarm robot designed by professor Michael Rubenstein. More details can be found [here](https://dash.harvard.edu/bitstream/handle/1/9367001/rubenstein_kilobotlow.pdf?sequence=1).
+For both subprojects I verify concepts on the kilobot simulation engine. [Kilobot](https://www.kilobotics.com/) is a low cost swarm robot designed by professor Michael Rubenstein. More details can be found [here](https://dash.harvard.edu/bitstream/handle/1/9367001/rubenstein_kilobotlow.pdf?sequence=1).
 
 ![kilobot](image/kilobot.png)
 
@@ -37,11 +37,11 @@ Often times it is helpful for a robot swarm to segregate into different function
 
 ### Motivation
 
-This work is inspired by [Piccolissimo - the smallest micro-aerial vehicle (Piccoli, et al).](https://www.modlabupenn.org/2016/10/27/piccolissimo/) The steerable MAV hovers with only one actuator while the body spins in the opposite direction to achieve passive stability. We add one light sensor on board, so the sensor records light pulses of surrounding light sources as it spins with the body. Given a triangular set of lights, the MAV can use the light pulses to position itself at the center of the triangle. While this project focuses on localization of a single low cost rotating hovercraft, we aim to build swarms of such low cost MAV with navigation capability eventually,
+This work is inspired by [Piccolissimo - the smallest micro-aerial vehicle (Piccoli, et al).](https://www.modlabupenn.org/2016/10/27/piccolissimo/) The steerable MAV hovers with only one actuator while the body spins in the opposite direction to achieve passive stability. We add one light sensor on board, so the sensor records light pulses of surrounding light sources as it spins with the body. Given a triangular set of lights, the MAV can use the light pulses to position itself at the center of the triangle. While this project focuses on localization of a single low cost rotating hovercraft, we aim to build a swarm of such low cost MAV with navigation capability eventually.
 
 ### Simulation
 
-I developed distributed algorithms to localize single agent and multi-agent swarms at the center of a light array without central coordination. I use the heuristic that signal pulses coming from the light sensor that rotates at constant velocity should be evenly spaced. If two light intensity peaks are observed within a short interval, the agent is likely too far away from those light sources and should adjust by moving closer. The zigzag trace in the slow-motion Fig 1 demonstrates these micro adjustments which allows the hovercraft to stay stably at the center. Fig 2 shows an extension of work on single agent and uses each other as additional light sources to help achieve stable localization at equilibrium.
+I develop distributed algorithms to localize single agent and multi-agent swarm at the center of a light array without central coordination. I use the heuristic that signal pulses coming from the light sensor that rotates at constant velocity should be evenly spaced. If two light intensity peaks are observed within too short an interval, the agent is likely too far away from those light sources and should adjust by moving closer. The zigzag trace in the slow-motion Fig 1 demonstrates these micro adjustments which allows the hovercraft to stay stably at the center. Fig 2 shows an extension of the work on single agent and uses other participating agents as additional light sources to help achieve stable localization at equilibrium.
 
 |<img src="image/fixed_picco.gif" width="280" height="280">|<img src="image/two_robot.gif" width="420" height="280" >|
 |----------------------------------------------------------|-----|
@@ -55,9 +55,9 @@ We seek to realize the single agent localization on a custom-made low-cost hover
 |----------------------------------------------------|-------------------------|
 |Fig 3. Hovercraft setup|Fig 4. Triangular light setup|
 
-In the slow motion video below, I show the self-rotating hovercraft senses the three light sources by blinking the red LED in those directions (the green LED is for power and always on). The prolonged red LED trace marks the longest interval, indicating the hovercraft is to off center in that direction, and during which the second horizontal propeller will be activated to pull the hovercraft away from that direction, although this function is still under development.
+In the slow motion video below, I show the self-rotating hovercraft senses the three light sources by blinking the red LED in those directions (the green LED is for power and always on). The prolonged red LED trace marks the longest interval, indicating the hovercraft is too off center in that direction, and during which the second horizontal propeller will be activated to pull the hovercraft away from that direction, although this function is still under development.
 
 [![video cover](image/video.png)](https://youtu.be/dKu8CtzP884)
 
 
-If you have any questions about my implementations, you can find me at my [portfolio page](https://yanweiw.github.io/). Cover photo credit to [Harvard SEAS](https://www.seas.harvard.edu/news/2014/08/self-organizing-thousand-robot-swarm).
+If you have any questions about my work, you can find me at my [portfolio page](https://yanweiw.github.io/). Cover photo credit to [Harvard SEAS](https://www.seas.harvard.edu/news/2014/08/self-organizing-thousand-robot-swarm).
