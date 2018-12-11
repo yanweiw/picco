@@ -17,12 +17,17 @@ In a multi-agent distributed system, it is necessary for robots to communicate t
 <!-- ![disp_N](image/disp_N.gif) -->
 <img src="image/disp_N.gif" width="600" height="600" >
 
+Fig 1. Kilobots coordinate to display a "N". Color stripes indicate information flow of local relativeness to build a global coordinate system
+
+
 ### Segregation based on Brazil nut effect
 
 Often times it is helpful for a robot swarm to segregate into different functional groups. One distributed way of achieving segregation is through the Brazil nut effect: The largest particles in a bag of variously sized objects usually end up on the surface after shaking the bag. A typical example is a container of mixed nuts, and Brazil nuts which are the largest usually appear on top. In the simulation kilobots of different color have different virtual radii and thus will segregate into different groups through their interaction. More details regarding the algorithm can be found [here](http://naturalrobotics.group.shef.ac.uk/supp/2012-001/)
 
 <!-- ![brazil](image/brazil.gif) -->
 <img src="image/brazil.gif" width="600" height="600" >
+
+Fig 2. Kilobots segregate into color groups based on their virtual radii
 
 
 ### Locomotion based on Reynolds flocking
@@ -32,6 +37,7 @@ Often times it is helpful for a robot swarm to segregate into different function
 <!-- ![flocking](image/flocking.gif) -->
 <img src="image/flocking.gif" width="600" height="600" >
 
+Fig 3. Kilobots mimic starling flocking
 
 ## Subproject II - Low-cost Hovercraft Sensing and Localization
 
@@ -41,19 +47,19 @@ This work is inspired by [Piccolissimo - the smallest micro-aerial vehicle (Picc
 
 ### Simulation
 
-I develop distributed algorithms to localize single agent and multi-agent swarm at the center of a light array without central coordination. I use the heuristic that signal pulses coming from the light sensor that rotates at constant velocity should be evenly spaced. If two light intensity peaks are observed within too short an interval, the agent is likely too far away from those light sources and should adjust by moving closer. The zigzag trace in the slow-motion Fig 1 demonstrates these micro adjustments which allows the hovercraft to stay stably at the center. Fig 2 shows an extension of the work on single agent and uses other participating agents as additional light sources to help achieve stable localization at equilibrium.
+I develop distributed algorithms to localize single agent and multi-agent swarm at the center of a light array without central coordination. I use the heuristic that signal pulses coming from the light sensor that rotates at constant velocity should be evenly spaced. If two light intensity peaks are observed within too short an interval, the agent is likely too far away from those light sources and should adjust by moving closer. The zigzag trace in the slow-motion Fig 4 demonstrates these micro adjustments which allows the hovercraft to stay stably at the center. Fig 5 shows an extension of the work on single agent and uses other participating agents as additional light sources to help achieve stable localization at equilibrium.
 
 |<img src="image/fixed_picco.gif" width="280" height="280">|<img src="image/two_robot.gif" width="420" height="280" >|
 |----------------------------------------------------------|-----|
-|Fig 1. Single agent localization|Fig 2. Multi-agent localization|
+|Fig 4. Single agent localization|Fig 5. Multi-agent localization|
 
 ### Hardware Implementation
 
-We seek to realize the single agent localization on a custom-made low-cost hovercraft, which consists of a Adafruit Trinket Mini microcontroller, one 3.7V Lithium battery, one light sensor, two propellers, two micro motors, one disposable cup and one foam plate. The build is shown in Fig 3 and the light set up in Fig 4.
+We seek to realize the single agent localization on a custom-made low-cost hovercraft, which consists of a Adafruit Trinket Mini microcontroller, one 3.7V Lithium battery, one light sensor, two propellers, two micro motors, one disposable cup and one foam plate. The build is shown in Fig 6 and the light set up in Fig 7.
 
 |<img src="image/picco.png" width="320" height="300">|<img src="image/lights.png" width="400" height="300">|
 |----------------------------------------------------|-------------------------|
-|Fig 3. Hovercraft setup|Fig 4. Triangular light setup|
+|Fig 6. Hovercraft setup|Fig 7. Triangular light setup|
 
 In the slow motion video below, I show the self-rotating hovercraft senses the three light sources by blinking the red LED in those directions (the green LED is for power and always on). The prolonged red LED trace marks the longest interval, indicating the hovercraft is too off center in that direction, and during which the second horizontal propeller will be activated to pull the hovercraft away from that direction, although this function is still under development.
 
